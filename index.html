@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BINHLE MATRIX V1</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap');
+:root{
+  --bg:#070a12;--panel:#0f1626;--border:#1e293b;
+  --text:#f1f5f9;--dim:#64748b;
+  --accent:#38bdf8;--red:#f43f5e;--amber:#f59e0b;--green:#10b981;
+  --purple:#a855f7;--gold:#fbbf24;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);padding:20px;font-size:13px}
+.wrap{max-width:1320px;margin:0 auto}
+
+/* ── HEADER ── */
+.header{text-align:center;margin-bottom:20px;padding-bottom:15px;border-bottom:1px solid var(--border)}
+.brand-row{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:6px}
+.brand-logo{font-size:28px;font-weight:700;letter-spacing:2px;background:linear-gradient(135deg,#38bdf8,#818cf8,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.brand-sub{font-size:11px;color:var(--dim);letter-spacing:1px;text-transform:uppercase}
+.vtag{display:inline-block;background:rgba(56,189,248,0.12);border:1px solid rgba(56,189,248,0.3);color:var(--accent);padding:2px 10px;border-radius:4px;font-size:10px;margin-left:6px;vertical-align:middle}
+.engine-tag{font-size:11px;color:var(--dim);margin-top:4px;line-height:1.6}
+.etag{font-size:10px;color:var(--green);opacity:0.75;margin-top:4px}
+
+/* ── INPUTS ── */
+textarea{width:100%;height:130px;background:var(--panel);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:12px;font-family:inherit;font-size:12px;margin-bottom:15px;outline:none;resize:vertical}
+textarea:focus{border-color:var(--accent)}
+button{width:100%;padding:14px;background:linear-gradient(90deg,#0ea5e9,#6366f1);color:#fff;border:none;border-radius:6px;font-size:14px;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:1px;transition:0.2s}
+button:hover{opacity:0.88}
+.hint{background:var(--panel);border:1px solid var(--border);padding:10px 12px;margin-bottom:15px;font-size:11px;color:var(--dim);border-radius:6px;line-height:1.8}
+.hint code{color:var(--amber)}
+.hint strong{color:var(--text)}
+.note{background:rgba(56,189,248,0.06);border:1px solid rgba(56,189,248,0.2);padding:10px 12px;margin-bottom:15px;font-size:11px;color:var(--dim);border-radius:6px;line-height:1.7}
+.note b{color:var(--accent)}
+
+/* ── LEGEND BOX ── */
+.legend{background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:10px 14px;margin-bottom:15px;font-size:11px;line-height:2;color:var(--dim)}
+.legend b{color:var(--text);font-size:11px}
+.legend .leg-row{display:flex;flex-wrap:wrap;gap:6px 20px}
+.ltag{display:inline-block;padding:2px 8px;border-radius:3px;font-size:10px;font-weight:700}
+.ltag-neg{background:rgba(244,63,94,0.15);color:var(--red);border:1px solid var(--red)}
+.ltag-low{background:rgba(245,158,11,0.15);color:var(--amber);border:1px solid var(--amber)}
+.ltag-ok{background:rgba(16,185,129,0.12);color:var(--green);border:1px solid var(--green)}
+
+/* ── TABLE ── */
+.tbl-wrap{overflow-x:auto;margin-top:20px;display:none}
+table{width:100%;border-collapse:collapse;min-width:1200px}
+th{background:#090d16;color:var(--dim);font-size:10px;text-transform:uppercase;padding:9px 7px;border:1px solid var(--border);text-align:center}
+td{border:1px solid var(--border);padding:9px 7px;text-align:center;vertical-align:middle;background:var(--panel)}
+.col-name{text-align:left;font-weight:600;min-width:150px;max-width:190px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lam{font-size:10px;color:var(--dim)}
+.lam b{color:var(--accent)}
+.badge{padding:3px 8px;border-radius:4px;font-size:10px;font-weight:700;display:inline-block;white-space:nowrap}
+.b-theo{background:rgba(244,63,94,0.15);color:var(--red);border:1px solid var(--red)}
+.b-du{background:rgba(245,158,11,0.15);color:var(--amber);border:1px solid var(--amber)}
+.b-ok{color:var(--dim)}
+.b-data{background:rgba(168,85,247,0.15);color:var(--purple);border:1px solid var(--purple)}
+
+/* Δ cell */
+.d-cell{display:flex;flex-direction:column;align-items:center;gap:3px}
+.dpos{color:var(--dim)}
+.dlow{color:var(--amber);font-weight:700}
+.dneg{color:var(--red);font-weight:700}
+.d-label{font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;white-space:nowrap;line-height:1.5}
+.dl-release{background:rgba(244,63,94,0.15);color:var(--red);border:1px solid rgba(244,63,94,0.4)}
+.dl-compress{background:rgba(245,158,11,0.15);color:var(--amber);border:1px solid rgba(245,158,11,0.4)}
+.dl-normal{background:rgba(100,116,139,0.1);color:var(--dim);border:1px solid var(--border)}
+
+/* row highlight */
+.row-theo td{background:rgba(244,63,94,0.07)!important}
+.row-theo td:first-child{border-left:3px solid var(--red)!important}
+.row-du td{background:rgba(245,158,11,0.07)!important}
+.row-du td:first-child{border-left:3px solid var(--amber)!important}
+.row-data td{background:rgba(168,85,247,0.07)!important}
+.row-data td:first-child{border-left:3px solid var(--purple)!important}
+
+/* matrix */
+.matrix-box{font-size:10px;line-height:1.85;text-align:left}
+.m-dim{color:var(--dim)}
+.m-std{color:var(--accent);font-weight:700}
+.m-hit{color:#fff;font-weight:700;background:rgba(56,189,248,0.18);border-radius:3px;padding:1px 5px;border-left:3px solid var(--accent);display:inline-block}
+.m-std-hit{color:#fff;font-weight:700;background:rgba(56,189,248,0.28);border-radius:3px;padding:1px 5px;border-left:3px solid #7dd3fc;display:inline-block;box-shadow:0 0 6px rgba(56,189,248,0.35)}
+.m-outer{color:#fff;font-weight:700;background:rgba(245,158,11,0.15);border-radius:3px;padding:1px 5px;border-left:3px solid var(--amber);display:inline-block}
+
+/* summary */
+.summary{margin-top:14px;padding:12px;background:var(--panel);border:1px solid var(--border);border-radius:6px;font-size:11px;color:var(--dim);line-height:1.8}
+.summary b{color:var(--text)}
+.s-red{color:var(--red);font-weight:700}
+.s-amb{color:var(--amber);font-weight:700}
+.s-pur{color:var(--purple);font-weight:700}
+
+/* footer */
+.footer{text-align:center;margin-top:24px;font-size:10px;color:var(--dim);opacity:0.6;letter-spacing:1px}
+
+/* dem box */
+.dem-box{display:flex;align-items:center;gap:10px;margin-bottom:15px;font-size:12px;color:var(--dim)}
+.dem-box input{width:80px;background:var(--panel);color:var(--text);border:1px solid var(--border);border-radius:4px;padding:6px 8px;font-family:inherit;font-size:12px;outline:none}
+.dem-box input:focus{border-color:var(--accent)}
+.dem-box b{color:var(--accent)}
+
+/* ── COPY RESULT ROW ── */
+.copy-row{display:none;margin-top:12px;gap:10px;align-items:center;flex-wrap:wrap}
+.copy-row.visible{display:flex}
+.copy-row button{width:auto}
+.btn-copy{flex:1;min-width:200px;padding:11px 18px;background:linear-gradient(90deg,#10b981,#059669);color:#fff;border:none;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:1px;transition:0.2s;text-transform:uppercase}
+.btn-copy:hover{opacity:0.85}
+.btn-copy.copied{background:linear-gradient(90deg,#6366f1,#818cf8)}
+.copy-fmt{background:var(--panel);border:1px solid var(--border);border-radius:4px;padding:6px 10px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);cursor:pointer}
+.copy-fmt:hover{border-color:var(--accent);color:var(--accent)}
+.copy-fmt.active{border-color:var(--green);color:var(--green)}
+.copy-label{font-size:11px;color:var(--dim)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="brand-row">
+      <span class="brand-logo">BINHLE</span>
+      <div>
+        <div style="font-size:16px;font-weight:700;color:var(--accent);letter-spacing:1px">
+          MATRIX <span class="vtag">V1 · TÀI XỈU + 1X2</span>
+        </div>
+        <div class="brand-sub">Powered by Poisson · 3-Step Engine · by Binh Le</div>
+      </div>
+    </div>
+    <div class="engine-tag">
+      Tuần tự 3 bước: Tài Xỉu → λ_Total | 1X2 → λH (fit P<sub>H</sub>−P<sub>A</sub>) | Poisson → AH fair mọi độ sâu.<br>
+      Δ = AH fair (phế = 0) − AH thực tế.
+    </div>
+    <div class="etag">🔬 Binary search · P_model có điều kiện cho line .0/.25/.5/.75 · fit hiệu số né phế Hòa</div>
+  </div>
+
+  <!-- HINT -->
+  <div class="hint">
+    <strong>Chuẩn dữ liệu 10 cột (Tab-separated) — theo thứ tự Nowgoal:</strong><br>
+    <code>Trận | 1X2_Chủ | 1X2_Hòa | 1X2_Khách | AH_Line | Odds_AH_Chủ(HK) | Odds_AH_Khách(HK) | OU_Line | Odds_Tài(HK) | Odds_Xỉu(HK)</code><br>
+    Tất cả odds: Hong Kong (số trên Nowgoal) &nbsp;|&nbsp; AH_Line &amp; OU_Line: số bàn (vd -0.75, 2.25)
+  </div>
+
+  <!-- LEGEND Δ -->
+  <div class="legend">
+    <b>📖 Đọc hiệu Δ = Fair − Thực (quy tắc cứng — không suy diễn):</b>
+    <div class="leg-row" style="margin-top:6px">
+      <span><span class="ltag ltag-neg">Δ &lt; 0 · Âm / Thả Giá</span> &nbsp;Chỉ ghi nhận odds thực cao hơn fair ở cửa này; <b>không tự suy diễn hướng</b></span>
+      <span><span class="ltag ltag-low">0 ≤ Δ &lt; đệm · Gần 0 / Nén Giá</span> &nbsp;Chỉ ghi nhận biên mỏng, odds thực sát fair ở cửa này; <b>không tự suy diễn chọn cửa</b></span>
+      <span><span class="ltag ltag-ok">Δ ≥ đệm · Bình Thường</span> &nbsp;Biên còn rộng hơn vùng đệm, không gắn nhãn bất thường</span>
+      <span><span class="ltag" style="background:rgba(168,85,247,0.15);color:var(--purple);border:1px solid var(--purple)">Cả 2 âm · Kiểm Tra Dữ Liệu</span> &nbsp;Khả năng cao nhập sai cột hoặc đảo dấu line</span>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>Tín hiệu tổng:</b>&nbsp;
+    <b style="color:var(--green)">Cả 2 ≥ đệm</b>: bình thường &nbsp;|&nbsp;
+    <b style="color:var(--amber)">1 đầu trong [0, đệm)</b>: gần 0 / nén giá &nbsp;|&nbsp;
+    <b style="color:var(--amber)">cả 2 đầu trong [0, đệm)</b>: biên mỏng hai phía — không thiên riêng một bên &nbsp;|&nbsp;
+    <b style="color:var(--red)">1 đầu &lt; 0</b>: Delta âm / thả giá &nbsp;|&nbsp;
+    <b style="color:var(--purple)">cả 2 âm</b>: kiểm tra dữ liệu
+  </div>
+
+  <textarea id="rawData" placeholder="Dán 10 cột dữ liệu vào đây..."></textarea>
+  <div class="dem-box">
+    <span>Vùng đệm gần 0 (Δ dưới mức này = nén giá):</span>
+    <input type="number" id="demInput" value="0.05" step="0.01" min="0">
+    <span>(vd <b>0.05</b>)</span>
+  </div>
+  <button onclick="run()">⚡ QUÉT MA TRẬN BINHLE</button>
+
+  <div class="tbl-wrap" id="tblWrap">
+    <table>
+      <thead>
+        <tr>
+          <th rowspan="2">Trận Đấu</th>
+          <th rowspan="2">AH / OU</th>
+          <th rowspan="2">λ Total<br>λH / λA</th>
+          <th rowspan="2">Ma Trận 3 Kèo AH Fair<br><span style="color:var(--accent);font-size:9px">[Nổi sáng = khớp thực · In đậm = kèo chuẩn]</span></th>
+          <th colspan="2">AH Thực (HK)</th>
+          <th colspan="2">Δ = Fair − Thực · Nhãn Giải Thích</th>
+          <th rowspan="2">Tín Hiệu</th>
+        </tr>
+        <tr><th>Chủ</th><th>Khách</th><th>Δ Chủ</th><th>Δ Khách</th></tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <div class="summary" id="summary"></div>
+
+    <!-- COPY RESULT ROW -->
+    <div class="copy-row" id="copyRow">
+      <span class="copy-label">📋 Sao chép kết quả:</span>
+      <button class="copy-fmt active" id="fmtTab" onclick="setFmt('tab')" title="Tab-separated — dán thẳng vào Excel / Sheets">TAB (Excel)</button>
+      <button class="copy-fmt" id="fmtText" onclick="setFmt('text')" title="Dạng văn bản đọc nhanh">TEXT</button>
+      <button class="btn-copy" id="btnCopy" onclick="copyResult()">⎘ COPY KẾT QUẢ PHÂN TÍCH</button>
+    </div>
+  </div>
+
+  <div class="footer">BINHLE MATRIX V1 · Poisson 3-Step Engine · All rights reserved</div>
+</div>
+
+<script>
+// ════════ POISSON CƠ BẢN ════════
+function poisson(lam,k){
+  if(lam<=0) return k===0?1:0;
+  let lp=-lam+k*Math.log(lam), lf=0;
+  for(let i=2;i<=k;i++) lf+=Math.log(i);
+  return Math.exp(lp-lf);
+}
+function pSum(lam,from,to){let s=0;for(let k=from;k<=to;k++)s+=poisson(lam,k);return s;}
+
+// ════════ BƯỚC 1: λ_Total từ Tài Xỉu ════════
+function pModelOU(lam,line){
+  const f=Math.floor(line);
+  const frac=Math.round((line-f)*4);
+  if(frac===2)  return 1-pSum(lam,0,f);
+  if(frac===0){ const pGt=1-pSum(lam,0,f),pEq=poisson(lam,f); return pGt/(1-pEq); }
+  if(frac===1){ const pGt=1-pSum(lam,0,f),pEq=poisson(lam,f); return pGt/(1-0.5*pEq); }
+  const pGt=1-pSum(lam,0,f+1),pEqN=poisson(lam,f+1);
+  return (pGt+0.5*pEqN)/(1-0.5*pEqN);
+}
+function solveLambdaTotal(pOver,line){
+  let lo=0.2,hi=7.0;
+  for(let it=0;it<80;it++){const mid=(lo+hi)/2;if(pModelOU(mid,line)<pOver)lo=mid;else hi=mid;}
+  return(lo+hi)/2;
+}
+
+// ════════ BƯỚC 2: λH từ 1X2 ════════
+const CAP=20;
+function calcHomeAway(lH,lA){
+  let pH=0,pA=0;
+  for(let i=0;i<=CAP;i++)for(let j=0;j<=CAP;j++){
+    const p=poisson(lH,i)*poisson(lA,j);
+    if(i>j)pH+=p; else if(i<j)pA+=p;
+  }
+  return{pH,pA};
+}
+function solveLambdaH(lamTotal,diffTarget){
+  let lo=0.05,hi=lamTotal-0.05;
+  for(let it=0;it<80;it++){
+    const mid=(lo+hi)/2;
+    const{pH,pA}=calcHomeAway(mid,lamTotal-mid);
+    if((pH-pA)-diffTarget<0)lo=mid;else hi=mid;
+  }
+  return(lo+hi)/2;
+}
+
+// ════════ BƯỚC 3: AH fair ════════
+function calcAHRaw(lH,lA,line){
+  function full(l){
+    let pH=0,pA=0;
+    for(let i=0;i<=CAP;i++)for(let j=0;j<=CAP;j++){
+      const p=poisson(lH,i)*poisson(lA,j),d=i-j;
+      if(Number.isInteger(l)){if(d-l>0)pH+=p;else if(d-l<0)pA+=p;}
+      else{if(d>l)pH+=p;else pA+=p;}
+    }
+    return{pH,pA};
+  }
+  const absL=Math.abs(line),frac=Math.round((absL%1)*4);
+  if(frac===0||frac===2)return full(line);
+  const l1=line>0?+(absL-0.25).toFixed(2):-(absL-0.25).toFixed(2);
+  const l2=line>0?+(absL+0.25).toFixed(2):-(absL+0.25).toFixed(2);
+  const r1=full(l1),r2=full(l2);
+  return{pH:(r1.pH+r2.pH)/2,pA:(r1.pA+r2.pA)/2};
+}
+function fairHK(lH,lA,line){
+  const{pH,pA}=calcAHRaw(lH,lA,line);
+  const s=pH+pA;
+  return{h:1/(pH/s)-1,a:1/(pA/s)-1};
+}
+
+const ALL_LINES=[-2,-1.75,-1.5,-1.25,-1,-0.75,-0.5,-0.25,0,0.25,0.5,0.75,1,1.25,1.5,1.75,2];
+function findKeoChuan(lH,lA){
+  let best=0,minD=Infinity;
+  ALL_LINES.forEach(l=>{const r=fairHK(lH,lA,l);const d=Math.abs(r.h-1.0);if(d<minD){minD=d;best=l;}});
+  return best;
+}
+function r2(n){return Math.round(n*100)/100;}
+
+// ════════ NHÃN Δ CỨng (không suy diễn) ════════
+function deltaLabel(delta, side, DEM){
+  if(delta < 0)
+    return `<span class="d-label dl-release">💸 Delta âm / Thả giá ${side}</span>`;
+  if(delta < DEM)
+    return `<span class="d-label dl-compress">🔻 Gần 0 / Nén giá ${side}</span>`;
+  return `<span class="d-label dl-normal">✓ Bình thường</span>`;
+}
+
+// ════════ PARSE ════════
+function pNum(v){if(v==null)return null;const n=parseFloat(String(v).trim().replace(',','.'));return isNaN(n)?null:n;}
+function pLine(s){
+  if(s==null)return null;
+  s=String(s).trim().toLowerCase().replace(/\s+/g,'').replace(/,/g,'.').replace(/\*/g,'');
+  if(s==='đồngbanh')return 0;
+  const neg=s.startsWith('-');if(neg)s=s.slice(1);
+  let v=null;
+  if(s.includes('/')){const p=s.split('/');v=(parseFloat(p[0])+parseFloat(p[1]))/2;}
+  else if(s.includes('-')&&s.indexOf('-')>0){const p=s.split('-');v=(parseFloat(p[0])+parseFloat(p[1]))/2;}
+  else v=parseFloat(s);
+  return isNaN(v)?null:(neg?-v:v);
+}
+
+// ════════ MAIN ════════
+function run(){
+  const raw=document.getElementById('rawData').value.trim();
+  if(!raw)return;
+  const tbody=document.getElementById('tbody');
+  tbody.innerHTML=`<tr><td colspan="9" style="color:var(--accent);padding:20px;text-align:center">⏳ Đang giải Poisson 3 bước...</td></tr>`;
+  document.getElementById('tblWrap').style.display='block';
+
+  setTimeout(()=>{
+    tbody.innerHTML='';
+    let total=0,neg=0,near=0,nearBoth=0,ok=0,dataErr=0,skip=0;
+    const DEM=parseFloat(document.getElementById('demInput').value)||0.05;
+
+    raw.split('\n').forEach(line=>{
+      const cols=line.split(/\t/);
+      if(cols.length<10){skip++;return;}
+      const name=cols[0].trim();
+      const o1H=pNum(cols[1]),o1D=pNum(cols[2]),o1A=pNum(cols[3]);
+      const ahL=pLine(cols[4]),ahH=pNum(cols[5]),ahA=pNum(cols[6]);
+      const ouL=pLine(cols[7]),oOv=pNum(cols[8]),oUn=pNum(cols[9]);
+      if([o1H,o1D,o1A,ouL,oOv,oUn,ahL,ahH,ahA].some(v=>v===null||isNaN(v))){skip++;return;}
+      total++;
+
+      // Bước 1
+      const decOv=oOv+1,decUn=oUn+1;
+      const pOverTrue=(1/decOv)/((1/decOv)+(1/decUn));
+      const lamTotal=solveLambdaTotal(pOverTrue,ouL);
+
+      // Bước 2
+      const pHr=1/o1H,pDr=1/o1D,pAr=1/o1A,S=pHr+pDr+pAr;
+      const diffTarget=(pHr-pAr)/S;
+      const lamH=solveLambdaH(lamTotal,diffTarget);
+      const lamA=lamTotal-lamH;
+
+      // Bước 3
+      const ft=fairHK(lamH,lamA,ahL);
+      const fairH=ft.h,fairA=ft.a;
+      const dH=fairH-ahH,dA=fairA-ahA;
+
+      // Ma trận
+      const kc=findKeoChuan(lamH,lamA);
+      const actR=r2(ahL);
+      const mLines=[r2(kc-0.25),kc,r2(kc+0.25)];
+      const dispLines=[...mLines];
+      if(!dispLines.find(l=>Math.abs(l-actR)<0.001)){dispLines.push(actR);dispLines.sort((a,b)=>a-b);}
+      let matHtml='';
+      dispLines.forEach(l=>{
+        const r=fairHK(lamH,lamA,l);
+        const isStd=Math.abs(l-kc)<0.001;
+        const isHit=Math.abs(l-actR)<0.001;
+        const inM=mLines.find(ml=>Math.abs(ml-l)<0.001)!==undefined;
+        let cls,mk='';
+        if(isStd&&isHit){cls='m-std-hit';mk=' ★◀';}
+        else if(isHit&&inM){cls='m-hit';mk=' ◀';}
+        else if(isHit){cls='m-outer';mk=' ◀(ngoài)';}
+        else if(isStd){cls='m-std';}
+        else{cls='m-dim';}
+        const ls=`${l>=0?'+':''}${l.toFixed(2)}`;
+        matHtml+=`<div><span class="${cls}">${ls}: ${r.h.toFixed(3)} / ${r.a.toFixed(3)}${mk}</span></div>`;
+      });
+
+      // Tín hiệu hàng
+      let signal='',rowCls='';
+      if(dH<0&&dA<0){
+        signal='<span class="badge b-data">⚠ KIỂM TRA DỮ LIỆU</span>';rowCls='row-data';dataErr++;
+      }else if(dH<0){
+        signal='<span class="badge b-theo">🔴 Δ CHỦ ÂM</span>';rowCls='row-theo';neg++;
+      }else if(dA<0){
+        signal='<span class="badge b-theo">🔴 Δ KHÁCH ÂM</span>';rowCls='row-theo';neg++;
+      }else if(dH<DEM&&dA<DEM){
+        signal='<span class="badge b-du">🟡 CẢ 2 GẦN 0</span>';rowCls='row-du';near++;nearBoth++;
+      }else if(dH<DEM){
+        signal='<span class="badge b-du">🟡 Δ CHỦ GẦN 0</span>';rowCls='row-du';near++;
+      }else if(dA<DEM){
+        signal='<span class="badge b-du">🟡 Δ KHÁCH GẦN 0</span>';rowCls='row-du';near++;
+      }else{
+        signal='<span class="badge b-ok">—</span>';ok++;
+      }
+
+      // Format ô Δ — số + nhãn cứng
+      function fmtD(v, side){
+        let numHtml;
+        if(v<0)       numHtml=`<span class="dneg">${v.toFixed(3)}</span>`;
+        else if(v<DEM) numHtml=`<span class="dlow">+${v.toFixed(3)}</span>`;
+        else           numHtml=`<span class="dpos">+${v.toFixed(3)}</span>`;
+        return `<div class="d-cell">${numHtml}${deltaLabel(v, side, DEM)}</div>`;
+      }
+
+      const tr=document.createElement('tr');
+      tr.className=rowCls;
+      tr.innerHTML=`
+        <td class="col-name">${name}</td>
+        <td class="lam">AH ${ahL>=0?'+':''}${ahL.toFixed(2)}<br>OU ${ouL.toFixed(2)}</td>
+        <td class="lam"><b>${lamTotal.toFixed(2)}</b><br>${lamH.toFixed(2)} / ${lamA.toFixed(2)}</td>
+        <td><div class="matrix-box">${matHtml}</div></td>
+        <td>${ahH.toFixed(2)}</td>
+        <td>${ahA.toFixed(2)}</td>
+        <td>${fmtD(dH,'Chủ')}</td>
+        <td>${fmtD(dA,'Khách')}</td>
+        <td>${signal}</td>`;
+      tbody.appendChild(tr);
+    });
+
+    document.getElementById('summary').innerHTML=
+      `Tổng: <b>${total}</b> mốc/nhà cái &nbsp;|&nbsp; `+
+      `<span class="s-red">🔴 Δ âm (thả giá): ${neg}</span> &nbsp;|&nbsp; `+
+      `<span class="s-amb">🟡 Gần 0 (nén giá): ${near}${nearBoth?` · cả 2 gần 0: ${nearBoth}`:''}</span> &nbsp;|&nbsp; `+
+      `Bình thường: ${ok}`+
+      (dataErr?` &nbsp;|&nbsp; <span class="s-pur">⚠ Kiểm tra dữ liệu: ${dataErr}</span>`:'')+
+      (skip?` &nbsp;|&nbsp; Bỏ qua (sai cột): ${skip}`:'');
+
+    // Hiện dòng copy
+    document.getElementById('copyRow').classList.add('visible');
+    document.getElementById('btnCopy').textContent='⎘ COPY KẾT QUẢ PHÂN TÍCH';
+    document.getElementById('btnCopy').classList.remove('copied');
+  },50);
+}
+
+// ════════ COPY RESULT ════════
+let _copyFmt='tab';
+function setFmt(f){
+  _copyFmt=f;
+  document.getElementById('fmtTab').classList.toggle('active',f==='tab');
+  document.getElementById('fmtText').classList.toggle('active',f==='text');
+}
+
+function copyResult(){
+  const rows=document.querySelectorAll('#tbody tr');
+  if(!rows.length){alert('Chưa có dữ liệu — hãy bấm QUÉT MA TRẬN trước.');return;}
+
+  const HDRS=['Trận Đấu','AH Line','OU Line','λ Total','λ Chủ','λ Khách',
+               'AH Fair Chủ','AH Fair Khách','AH Thực Chủ','AH Thực Khách',
+               'Δ Chủ','Δ Khách','Nhãn Δ Chủ','Nhãn Δ Khách','Tín Hiệu'];
+
+  const lines=[];
+
+  if(_copyFmt==='tab'){
+    lines.push(HDRS.join('\t'));
+  }else{
+    lines.push('═══════════════ BINHLE MATRIX · KẾT QUẢ PHÂN TÍCH ═══════════════');
+    const DEM=parseFloat(document.getElementById('demInput').value)||0.05;
+    lines.push(`Vùng đệm: ${DEM}`);
+    lines.push('');
+  }
+
+  rows.forEach(tr=>{
+    const tds=tr.querySelectorAll('td');
+    if(!tds.length)return;
+
+    const name=tds[0].textContent.trim();
+
+    // AH / OU line (cột index 1) — dùng innerHTML vì <br> không tạo khoảng trắng trong textContent
+    const ahOuRaw=tds[1].innerHTML
+      .replace(/<br\s*\/?>/gi,' ')
+      .replace(/<[^>]*>/g,' ')
+      .replace(/&nbsp;/g,' ')
+      .replace(/\s+/g,' ')
+      .trim();
+    const ahMatch=ahOuRaw.match(/AH\s*([+\-]?\d+(?:\.\d+)?)/i);
+    const ouMatch=ahOuRaw.match(/OU\s*([+\-]?\d+(?:\.\d+)?)/i);
+    const ahLine=ahMatch?ahMatch[1]:'';
+    const ouLine=ouMatch?ouMatch[1]:'';
+
+    // λ (cột index 2) — dùng innerHTML vì <br> không tạo khoảng trắng trong textContent
+    const lamCell=tds[2];
+    const lamHtml=lamCell.innerHTML
+      .replace(/<br\s*\/?>/gi,' ')
+      .replace(/<[^>]*>/g,' ')
+      .replace(/&nbsp;/g,' ')
+      .replace(/\s+/g,' ')
+      .trim();
+    const lamMatch=lamHtml.match(/([\d.]+)\s+([\d.]+)\s*\/\s*([\d.]+)/);
+    const lamTotal=lamMatch?lamMatch[1]:'';
+    const lamH=lamMatch?lamMatch[2]:'';
+    const lamA=lamMatch?lamMatch[3]:'';
+
+    // Ma trận — lấy dòng khớp thực (◀)
+    const matBox=tds[3];
+    let fairH='',fairA='';
+    const hitSpan=matBox.querySelector('.m-std-hit,.m-hit,.m-outer');
+    if(hitSpan){
+      const t=hitSpan.textContent.replace(/[★◀(ngoài)]/g,'').trim();
+      const m=t.match(/[+\-]?\d+\.\d+:\s*([\d.]+)\s*\/\s*([\d.]+)/);
+      if(m){fairH=m[1];fairA=m[2];}
+    }
+
+    // Thực tế Chủ / Khách (cột 4,5)
+    const actH=tds[4].textContent.trim();
+    const actA=tds[5].textContent.trim();
+
+    // Δ (cột 6,7) — số + nhãn
+    function extractDelta(td){
+      const num=(td.querySelector('.dneg,.dlow,.dpos')||{}).textContent||'';
+      const lbl=(td.querySelector('.d-label')||{}).textContent||'';
+      return{num:num.trim(),lbl:lbl.trim()};
+    }
+    const dH=extractDelta(tds[6]);
+    const dA=extractDelta(tds[7]);
+
+    // Tín hiệu (cột 8)
+    const sig=tds[8].textContent.trim();
+
+    if(_copyFmt==='tab'){
+      lines.push([name,ahLine,ouLine,lamTotal,lamH,lamA,fairH,fairA,actH,actA,
+                  dH.num,dA.num,dH.lbl,dA.lbl,sig].join('\t'));
+    }else{
+      lines.push(`▸ ${name}`);
+      lines.push(`  AH ${ahLine} | OU ${ouLine} | λ ${lamTotal} (${lamH}/${lamA})`);
+      lines.push(`  Fair → Chủ: ${fairH}  Khách: ${fairA}  |  Thực → Chủ: ${actH}  Khách: ${actA}`);
+      lines.push(`  Δ Chủ: ${dH.num} [${dH.lbl}]  |  Δ Khách: ${dA.num} [${dA.lbl}]`);
+      lines.push(`  Tín hiệu: ${sig}`);
+      lines.push('');
+    }
+  });
+
+  if(_copyFmt==='text'){
+    lines.push('════════════════════════════════════════════════════════════════════');
+    lines.push(document.getElementById('summary').textContent.trim());
+  }
+
+  navigator.clipboard.writeText(lines.join('\n')).then(()=>{
+    const btn=document.getElementById('btnCopy');
+    btn.textContent='✅ ĐÃ COPY!';
+    btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent='⎘ COPY KẾT QUẢ PHÂN TÍCH';btn.classList.remove('copied');},2200);
+  }).catch(()=>{
+    // Fallback textarea
+    const ta=document.createElement('textarea');
+    ta.value=lines.join('\n');
+    ta.style.position='fixed';ta.style.opacity='0';
+    document.body.appendChild(ta);ta.select();document.execCommand('copy');
+    document.body.removeChild(ta);
+    const btn=document.getElementById('btnCopy');
+    btn.textContent='✅ ĐÃ COPY!';btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent='⎘ COPY KẾT QUẢ PHÂN TÍCH';btn.classList.remove('copied');},2200);
+  });
+}
+</script>
+</body>
+</html>
