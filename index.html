@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BINHLE MATRIX V1</title>
+<title>BINHLE MATRIX V1.1</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap');
 :root{
@@ -123,7 +123,7 @@ td{border:1px solid var(--border);padding:9px 7px;text-align:center;vertical-ali
       <span class="brand-logo">BINHLE</span>
       <div>
         <div style="font-size:16px;font-weight:700;color:var(--accent);letter-spacing:1px">
-          MATRIX <span class="vtag">V1 · TÀI XỈU + 1X2</span>
+          MATRIX <span class="vtag">V1.1 · TÀI XỈU + 1X2</span>
         </div>
         <div class="brand-sub">Powered by Poisson · 3-Step Engine · by Binh Le</div>
       </div>
@@ -197,7 +197,7 @@ td{border:1px solid var(--border);padding:9px 7px;text-align:center;vertical-ali
     </div>
   </div>
 
-  <div class="footer">BINHLE MATRIX V1 · Poisson 3-Step Engine · All rights reserved</div>
+  <div class="footer">BINHLE MATRIX V1.1 · COPY AH TOOL · Poisson 3-Step Engine · All rights reserved</div>
 </div>
 
 <script>
@@ -391,6 +391,8 @@ function run(){
 
       const tr=document.createElement('tr');
       tr.className=rowCls;
+      // Lưu trực tiếp AH tool (line giữa kc) từ engine với λ đầy đủ, không tái tính từ λ đã làm tròn.
+      tr.dataset.ahTool=(kc>=0?'+':'')+kc.toFixed(2);
       tr.innerHTML=`
         <td class="col-name">${name}</td>
         <td class="lam">AH ${ahL>=0?'+':''}${ahL.toFixed(2)}<br>OU ${ouL.toFixed(2)}</td>
@@ -431,7 +433,7 @@ function copyResult(){
   const rows=document.querySelectorAll('#tbody tr');
   if(!rows.length){alert('Chưa có dữ liệu — hãy bấm QUÉT MA TRẬN trước.');return;}
 
-  const HDRS=['Trận Đấu','AH Line','OU Line','λ Total','λ Chủ','λ Khách',
+  const HDRS=['Trận Đấu','AH Line','AH Tool','OU Line','λ Total','λ Chủ','λ Khách',
                'AH Fair Chủ','AH Fair Khách','AH Thực Chủ','AH Thực Khách',
                'Δ Chủ','Δ Khách','Nhãn Δ Chủ','Nhãn Δ Khách','Tín Hiệu'];
 
@@ -462,6 +464,7 @@ function copyResult(){
     const ahMatch=ahOuRaw.match(/AH\s*([+\-]?\d+(?:\.\d+)?)/i);
     const ouMatch=ahOuRaw.match(/OU\s*([+\-]?\d+(?:\.\d+)?)/i);
     const ahLine=ahMatch?ahMatch[1]:'';
+    const ahTool=tr.dataset.ahTool||'';
     const ouLine=ouMatch?ouMatch[1]:'';
 
     // λ (cột index 2) — dùng innerHTML vì <br> không tạo khoảng trắng trong textContent
@@ -504,11 +507,11 @@ function copyResult(){
     const sig=tds[8].textContent.trim();
 
     if(_copyFmt==='tab'){
-      lines.push([name,ahLine,ouLine,lamTotal,lamH,lamA,fairH,fairA,actH,actA,
+      lines.push([name,ahLine,ahTool,ouLine,lamTotal,lamH,lamA,fairH,fairA,actH,actA,
                   dH.num,dA.num,dH.lbl,dA.lbl,sig].join('\t'));
     }else{
       lines.push(`▸ ${name}`);
-      lines.push(`  AH ${ahLine} | OU ${ouLine} | λ ${lamTotal} (${lamH}/${lamA})`);
+      lines.push(`  AH thực ${ahLine} | AH tool ${ahTool} | OU ${ouLine} | λ ${lamTotal} (${lamH}/${lamA})`);
       lines.push(`  Fair → Chủ: ${fairH}  Khách: ${fairA}  |  Thực → Chủ: ${actH}  Khách: ${actA}`);
       lines.push(`  Δ Chủ: ${dH.num} [${dH.lbl}]  |  Δ Khách: ${dA.num} [${dA.lbl}]`);
       lines.push(`  Tín hiệu: ${sig}`);
